@@ -16,27 +16,27 @@ As seen on twitter (https://twitter.com/alperezqui/status/1365042068435918855), 
 
 ## Requirements
 ```{r Packages, include = TRUE,eval=FALSE}
-#For biblio analysis
-install.packages("gcite")
-install.packages("easyPubMed")
-install.packages("tm")
-
-#For maps
-install.packages("maps")
-install.packages("rgeos")
-install.packages("rworldmap")
-
-#for plotting
-install.packages("ggplot2")
-install.packages("lemon")
-install.packages("cowplot")
-install.packages("ggrepel")
-install.packages("ggtext")
-install.packages("ggwordcloud")
-
-#Miscellaneous
-install.packages("stringr")
-install.packages("dplyr")
+# #For biblio analysis
+# install.packages("gcite")
+# install.packages("easyPubMed")
+# install.packages("tm")
+# 
+# #For maps
+# install.packages("maps")
+# install.packages("rgeos")
+# install.packages("rworldmap")
+# 
+# #for plotting
+# install.packages("ggplot2")
+# install.packages("lemon")
+# install.packages("cowplot")
+# install.packages("ggrepel")
+# install.packages("ggtext")
+# install.packages("ggwordcloud")
+# 
+# #Miscellaneous
+# install.packages("stringr")
+# install.packages("dplyr")
 
 ```
 
@@ -56,10 +56,10 @@ library(lemon)
 library(dplyr)
 
 #Set variabels
-Scholar_ID <- "Sc3CfZsAAAAJ" 
-# this is your author scholar Id, it'll be found in the adress of your scholar profile after user=and before &, https://scholar.google.com/citations?user=Sc3CfZsAAAAJ&hl=en
-Author_fullname<- c("Alvaro L Perez-Quintero","Alvaro Perez-Quintero") #full name as it appears in articles in pubmed
-Author_lastname<-c("Perez-Quintero","Pérez-Quintero","Perez‐Quintero") #last name and alternative spellings
+Scholar_ID <- "ZjBauSkAAAAJ" 
+# this is your author scholar Id, it'll be found in the address of your scholar profile after user=and before &, https://scholar.google.com/citations?user=ZjBauSkAAAAJ&hl=en
+Author_fullname<- c("Jasper Slingsby","Jasper A Slingsby") #full name as it appears in articles in pubmed
+Author_lastname<-c("Slingsby") #last name and alternative spellings
 
 #Get publication record from scholar
 df<-get_publications(Scholar_ID)
@@ -78,7 +78,7 @@ df<-df[!is.na(df$publication.date),] #flter out entries with unknown date
 df$year<-as.numeric(str_split_fixed(df$publication.date,"/",2)[,1])#get only year of publication  
 
 #get impact factor
-IF<-get_impactfactor(df$journal) #get impact factor for journals, some might not be accurate and may require to be changed manually
+IF<-get_journalrank(df$journal) #get impact factor for journals, some might not be accurate and may require to be changed manually
 df<-cbind(df,IF)#add impact factors to data frame
 
 #highlight first author paper
@@ -93,9 +93,9 @@ Highlight<-c("Nature biotechnology") #Create a vector For those articles you'd l
 df$labels<-ifelse(df$journal %in% Highlight, as.character(df$journal), NA)
 
 #Optional: limit to publications after a given year, I have only tested the code using ~10years
-df<-df[df$year>=2009,]
+#df<-df[df$year>=2009,]
 #Plot
-p1v1<-ggplot(df,aes(y=ImpactFactor,x=year))+
+p1v1<-ggplot(df,aes(y=SJR,x=year))+
   geom_point(aes(fill=ImpactFactor,stroke=first),size=4,shape=21,na.rm = TRUE)+ #points filled according to impact factor, with border according to first authos
   geom_text_repel(aes(label=labels), xlim = c(max(df$year)+2, Inf), ylim = c(-Inf, Inf),min.segment.length = 0,na.rm = TRUE)+ #add labels starting 2 years after the xlimit
   theme_cowplot()+
